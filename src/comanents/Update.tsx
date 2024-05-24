@@ -5,8 +5,7 @@ import supabase from "../config/supabaseClient";
 interface UpdateModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: { id: number; name: string; last_name: string }) => void;
-  initialData: { id: number; name: string; last_name: string } | null;
+   initialData: { id: number; name: string; last_name: string } | null;
 }
 
 interface FormData {
@@ -15,7 +14,7 @@ interface FormData {
   last_name: string;
 }
 
-const Update  = ({ initialData, isOpen, onClose, onSubmit }:  UpdateModalProps) => {
+const Update  = ({ initialData, isOpen, onClose }:  UpdateModalProps) => {
   const { register, handleSubmit, setValue } = useForm<FormData>({ mode: "all" });
   const [error, setError] = useState<string>("");
 
@@ -61,8 +60,7 @@ const Update  = ({ initialData, isOpen, onClose, onSubmit }:  UpdateModalProps) 
 
       if (error) {
         setError("Could not update the data");
-      } else {
-        onSubmit(data);
+      } else { 
         onClose();
       }
     } catch (error) {

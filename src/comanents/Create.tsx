@@ -1,35 +1,56 @@
-import React from "react";
+import React, { useState } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
+import supabase from "../config/supabaseClient";
 
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: { name: string; last_name: string }) => void;
+}
+interface FormData {
+  id: number;
+  name: string;
+  last_name: string;
 }
 
-const Create  = ({ isOpen, onClose, onSubmit }:ModalProps) => {
+const Create = ({ isOpen, onClose }: ModalProps) => {
+  const { register, handleSubmit,reset } = useForm<FormData>({ mode: "all" });
+  const [error, setError] = useState<string>("");
   if (!isOpen) return null;
 
-  const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.target as HTMLFormElement);
-    const data = Object.fromEntries(formData) as { name: string; last_name: string };
-    onSubmit(data);
-    onClose();
+  const submit: SubmitHandler<FormData> = async (data2) => {
+    try {
+      const { data, error } = await supabase
+        .from("deidine")
+        .insert({ name: data2.name, last_name: data2.last_name });
+        reset(); 
+      if (error) {
+        setError("Could not update the data");
+      } else {
+        onClose();
+      }
+    } catch (error) {
+      setError("An error occurred while updating data");
+    }
   };
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+      {error && <p className="text-red-500">{error}</p>}
+
       <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold">Insert New Data</h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
+          <button
+            onClick={onClose}
+            className="text-gray-500 hover:text-gray-700"
+          >
             &times;
           </button>
         </div>
-        <form onSubmit={handleFormSubmit}>
+        <form onSubmit={handleSubmit(submit)}>
           <div className="mb-4">
             <label className="block text-gray-700">Name</label>
             <input
-              name="name"
+              {...register("name", { required: true })}
               type="text"
               className="w-full px-3 py-2 border rounded-lg"
               required
@@ -38,7 +59,7 @@ const Create  = ({ isOpen, onClose, onSubmit }:ModalProps) => {
           <div className="mb-4">
             <label className="block text-gray-700">Last Name</label>
             <input
-              name="last_name"
+              {...register("last_name", { required: true })}
               type="text"
               className="w-full px-3 py-2 border rounded-lg"
               required
