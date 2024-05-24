@@ -109,11 +109,19 @@ function Table() {
     <>
       <div className="flex flex-col p-6 bg-gray-100 text-gray-900 tracking-wider leading-normal min-h-screen">
         <div className="flex flex-row items-center p-2 space-x-4">
-          <button
+        <button
             className="rounded-xl bg-green-600 text-white px-4 py-2 font-bold shadow-md hover:bg-green-700 transition duration-300"
             onClick={() => setIsModalOpen(true)}
           >
             Insert New
+          </button> 
+          <button
+            className="rounded-xl bg-yellow-600 text-white px-4 py-2 font-bold shadow-md hover:bg-green-700 transition duration-300"
+            onClick={() => 
+              navigate("/login")
+             }
+          >
+          Login
           </button>
           {user && (
             <div className="flex items-center space-x-2">
