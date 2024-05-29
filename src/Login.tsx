@@ -17,12 +17,13 @@ supabase.auth.onAuthStateChange(async(event:any)=>{
 
   return (
     <div>Login
-<div>
+<div className="flex p-3  ">
     <Auth
+   
     supabaseClient={supabase}
     appearance={{theme:ThemeSupa}}
     theme='dark'
-    providers={["github","google"]}
+    providers={["github","google","facebook"]}
     />
 </div>
 

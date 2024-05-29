@@ -17,11 +17,11 @@ const Create = ({ isOpen, onClose }: ModalProps) => {
   const [error, setError] = useState<string>("");
   if (!isOpen) return null;
 
-  const submit: SubmitHandler<FormData> = async (data2) => {
+  const submit: SubmitHandler<FormData> = async (data) => {
     try {
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from("deidine")
-        .insert({ name: data2.name, last_name: data2.last_name });
+        .insert({ name: data.name, last_name: data.last_name });
         reset(); 
       if (error) {
         setError("Could not update the data");

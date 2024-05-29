@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
+import { debounce } from "lodash";
 import supabase from "../config/supabaseClient";
 import { useNavigate } from 'react-router-dom';
 import Create from "./Create";
 import Update from "./Update";
+import ImageUpload from "./ImageUpload";
 
 interface DataItem {
   id: number;
@@ -47,22 +49,31 @@ function Table() {
     }
   };
 
-  const searchDtat = async () => {
+  const searchDtat = async (searchText: string) => {
     setIsLoading(true);
     try {
       const { data, error } = await supabase
         .from("deidine")
         .select()
-        .ilike("name", "%" + search + "%");
+        .ilike("name", "%" + searchText + "%");
 
       setAllData(data || []);
-      setSearch("")
     } catch (error) {
       setError("An error occurred while fetching data");
     } finally {
       setIsLoading(false);
     }
   };
+
+  const debouncedSearch = useCallback(debounce(searchDtat, 300), []);
+
+  useEffect(() => {
+    if (search) {
+      debouncedSearch(search);
+    } else {
+      fetchTable();
+    }
+  }, [search]);
 
   const fetchUser = async () => {
     const { data } = await supabase.auth.getUser();
@@ -94,7 +105,7 @@ function Table() {
   };
 
   const navigate = useNavigate();
-  
+
   const openUpdateModal = (item: DataItem) => {
     setCurrentData(item);
     setIsUpdateModalOpen(true);
@@ -142,12 +153,6 @@ function Table() {
             className="flex-1 p-2 border rounded-md"
             placeholder="Search by name"
           />
-          <button
-            onClick={searchDtat}
-            className="rounded-xl bg-blue-600 text-white px-4 py-2 font-bold shadow-md hover:bg-blue-700 transition duration-300"
-          >
-            Search
-          </button>
         </div>
         {error && <p className="text-red-500 mt-4">{error}</p>}
         {isLoading ? (
@@ -207,6 +212,7 @@ function Table() {
           }}
           initialData={currentData}
         />
+        <ImageUpload/>
       </div>
     </>
   );
